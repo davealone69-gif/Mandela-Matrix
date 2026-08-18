@@ -1,41 +1,48 @@
 plugins {
-    id("AndroidApplicationConventionPlugin")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.detekt)
-    alias(libs.plugins.kover)
 }
 
 android {
     namespace = "com.mandela.matrix.reimagenator"
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.mandela.matrix.reimagenator"
+        minSdk = 24
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0.0"
-    }
-
-    signingConfigs {
-        create("release") {
-            storeFile = file(System.getenv("KEYSTORE_PATH") ?: "keystore.jks")
-            storePassword = System.getenv("KEYSTORE_PASSWORD")
-            keyAlias = System.getenv("KEY_ALIAS")
-            keyPassword = System.getenv("KEY_PASSWORD")
-        }
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
         }
         debug {
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
         }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+    buildFeatures {
+        compose = true
     }
 
     packaging {
@@ -68,6 +75,5 @@ dependencies {
 }
 
 detekt {
-    config.setFrom("$rootDir/detekt.yml")
     buildUponDefaultConfig = true
 }
